@@ -6,9 +6,16 @@ const readline = require('readline');
 const WebSocket = require('ws');
 const { DateTime } = require('luxon');
 const { HttpsProxyAgent } = require('https-proxy-agent');
-const figlet = require('figlet');
 
-console.log(figlet.textSync('PUTICOOL').rainbow);
+console.clear();
+console.log(`
+██████╗ ██╗   ██╗████████╗██╗ ██████╗ ██████╗  ██████╗ ██╗      
+██╔══██╗██║   ██║╚══██╔══╝██║██╔════╝██╔═══██╗██╔═══██╗██║      
+██████╔╝██║   ██║   ██║   ██║██║     ██║   ██║██║   ██║██║      
+██╔═══╝ ██║   ██║   ██║   ██║██║     ██║   ██║██║   ██║██║      
+██║     ╚██████╔╝   ██║   ██║╚██████╗╚██████╔╝╚██████╔╝███████╗ 
+╚═╝      ╚═════╝    ╚═╝   ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝ ╚══════╝ 
+        `.cyan);
 console.log('[+] Welcome & Enjoy Sir !'.green);
 console.log('[+] Error? PM Telegram [https://t.me/NothingYub]'.red);
 class Bsx {

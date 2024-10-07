@@ -5,9 +5,16 @@ const colors = require('colors');
 const readline = require('readline');
 const WebSocket = require('ws');
 const { DateTime } = require('luxon');
-const figlet = require('figlet');
 
-console.log(figlet.textSync('PUTICOOL').rainbow);
+console.clear();
+console.log(`
+██████╗ ██╗   ██╗████████╗██╗ ██████╗ ██████╗  ██████╗ ██╗      
+██╔══██╗██║   ██║╚══██╔══╝██║██╔════╝██╔═══██╗██╔═══██╗██║      
+██████╔╝██║   ██║   ██║   ██║██║     ██║   ██║██║   ██║██║      
+██╔═══╝ ██║   ██║   ██║   ██║██║     ██║   ██║██║   ██║██║      
+██║     ╚██████╔╝   ██║   ██║╚██████╗╚██████╔╝╚██████╔╝███████╗ 
+╚═╝      ╚═════╝    ╚═╝   ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝ ╚══════╝ 
+        `.cyan);
 console.log('[+] Welcome & Enjoy Sir !'.green);
 console.log('[+] Error? PM Telegram [https://t.me/NothingYub]'.red);
 
@@ -67,36 +74,36 @@ class Bsx {
 
     connectWebSocket(authorization) {
         const wsUrl = `wss://arena.bsx.exchange/ws?init_data=${authorization}`;
-    
+
         this.ws = new WebSocket(wsUrl, {
             headers: {
                 ...this.headers,
                 "authorization": `Bearer ${authorization}`
             }
         });
-    
+
         this.ws.on('open', () => {
             this.log('Starting prediction', 'success');
             this.startPredictionInterval();
         });
-    
+
         this.ws.on('message', async (data) => {
             const message = JSON.parse(data);
-    
+
             if (message.gas !== undefined) {
                 this.log(`Remaining Gas: ${message.gas}`, 'info');
             }
-    
+
             if (message.result === 'won') {
                 this.log(`Win (${message.winningStreak}) | Points ${message.points} | Remaining Gas ${message.gas}`, 'custom');
             } else if (message.result === 'lost') {
                 this.log(`Lost | Remaining Gas ${message.gas}`, 'custom');
             }
-            
+
             if (message.gas === 0) {
                 this.log('Gas is 0, refilling...', 'warning');
                 this.ws.send(JSON.stringify({ event: "refill" }));
-                
+
                 const refillResult = await new Promise(resolve => {
                     this.ws.once('message', (data) => {
                         const refillMessage = JSON.parse(data);
@@ -109,7 +116,7 @@ class Bsx {
                         }
                     });
                 });
-                
+
                 if (refillResult.success) {
                     this.log(`Refill successful | New gas: ${refillResult.gas}`, 'success');
                 } else if (refillResult.timeReached) {
@@ -123,11 +130,11 @@ class Bsx {
                 }
             }
         });
-    
+
         this.ws.on('error', (error) => {
             this.log(`Connection error: ${error.message}`, 'error');
         });
-    
+
         this.ws.on('close', () => {
             this.log('Disconnected', 'warning');
             this.stopPredictionInterval();
@@ -140,7 +147,7 @@ class Bsx {
                 const option = Math.random() < 0.5 ? 'moon' : 'doom';
                 const winOrMiss = Math.random() < 0.8 ? "win" : "miss";
                 const prediction = { event: winOrMiss, option };
-                
+
                 this.log(`Prediction: ${option}`, 'info');
                 this.ws.send(JSON.stringify(prediction));
             }
@@ -155,7 +162,7 @@ class Bsx {
     }
 
 
-    async callAPI(authorization, endpoint = "users", method = "POST", data = {"refBy":"LtcZAUnn"}) {
+    async callAPI(authorization, endpoint = "users", method = "POST", data = { "refBy": "LtcZAUnn" }) {
         const url = `https://arena.bsx.exchange/${endpoint}`;
         const headers = { ...this.headers, "authorization": `Bearer ${authorization}` };
         try {
@@ -206,7 +213,7 @@ class Bsx {
                         const farmingStartTime = DateTime.fromISO(result.data.latestFarmingTime);
                         const farmingEndTime = farmingStartTime.plus({ hours: 8 });
                         const now = DateTime.now();
-                        
+
                         if (now > farmingEndTime) {
                             this.log('Farming time has ended. Starting farming...', 'info');
                             const farmingResult = await this.callAPI(authorization, "tasks/farming", "POST", {});
